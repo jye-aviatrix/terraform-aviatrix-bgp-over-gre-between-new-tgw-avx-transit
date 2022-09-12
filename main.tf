@@ -27,8 +27,7 @@ resource "aws_ec2_transit_gateway" "tgw" {
 
 
 locals {
-  avx_transit_subnets = var.avx_transit_gw_ha ? [module.mc-transit.transit_gateway.subnet, module.mc-transit.transit_gateway.ha_subnet] : [module.mc-transit.transit_gateway.subnet]
-  avx_transit_subnet_ids = matchkeys(module.mc-transit.vpc.subnets,module.mc-transit.vpc.subnets[*].cidr,local.avx_transit_subnets)[*].subnet_id
+  avx_transit_subnet_ids = [for x in module.mc-transit.vpc.subnets: x if length(regexall("Public-gateway-and-firewall-mgmt",x.name))>0][*].subnet_id
 }
 
 # Create AWS TGW Attachment to Aviatrix Transit VPC
