@@ -27,11 +27,6 @@ variable "avx_transit_gw_name" {
   default = "ue1transit"
 }
 
-variable "avx_transit_gw_ha" {
-  description = "Set to false to deploy a single Aviatrix transit gateway"
-  default = true
-}
-
 variable "aws_tgw_asn" {
   description = "Provide ASN number for AWS TGW"
   default = 65001
@@ -46,4 +41,9 @@ variable "aws_tgw_cidr_block" {
     description = "Cidr block to be assigned to TGW for GRE connection"
     default = "192.168.1.0/24"
     type = string
+}
+
+variable "aws_tgw_BGP_inside_CIDR_ranges_27" {
+  description = "Provide /27 IP range for four TGW BGP inside /29 CIDR"
+  default = "169.254.100.0/27"
 }
