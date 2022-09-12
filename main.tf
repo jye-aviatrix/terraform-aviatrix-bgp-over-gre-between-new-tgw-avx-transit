@@ -36,6 +36,15 @@ resource "aws_ec2_transit_gateway_vpc_attachment" "tgw_to_avx_transit_vpc" {
   transit_gateway_id = aws_ec2_transit_gateway.tgw.id
   vpc_id             = module.mc-transit.vpc.vpc_id
   tags = {
-    "Name" = var.avx_transit_gw_ha
+    "Name" = "${var.avx_transit_gw_name}-VPC"
+  }
+}
+
+# Create AWS TGW Connect Attachment point to TGW VPC attachment
+resource "aws_ec2_transit_gateway_connect" "attachment" {
+  transport_attachment_id = aws_ec2_transit_gateway_vpc_attachment.tgw_to_avx_transit_vpc.id
+  transit_gateway_id      = aws_ec2_transit_gateway.tgw.id
+  tags = {
+    "Name" = "${var.avx_transit_gw_name}-Connect"
   }
 }
