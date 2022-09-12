@@ -41,3 +41,9 @@ variable "aws_tgw_name" {
   description = "Provide AWS TGW name"
   default = "ue1tgw"
 }
+
+variable "aws_tgw_cidr_blocks" {
+    description = "value"
+    default = ["192.168.1.0/24"]
+    type = list(string)
+}
