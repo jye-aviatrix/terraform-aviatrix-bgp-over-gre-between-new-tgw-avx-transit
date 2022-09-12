@@ -64,6 +64,7 @@ resource "aws_route" "route_to_tgw_cidr_block" {
   }
 }
 
+# From TGW Create GRE peering connection to Aviatrix transit via private connection.
 resource "aws_ec2_transit_gateway_connect_peer" "tgw_gre_peer" {
   count                         = 4
   peer_address                  = count.index % 2 == 0 ? module.mc-transit.transit_gateway.private_ip : module.mc-transit.transit_gateway.ha_private_ip
@@ -75,6 +76,7 @@ resource "aws_ec2_transit_gateway_connect_peer" "tgw_gre_peer" {
   }
 }
 
+# From Aviatrix Transit, create GRE peering connection to AWS TGW
 resource "aviatrix_transit_external_device_conn" "to_tgw" {
   count                     = 2
   vpc_id                    = module.mc-transit.transit_gateway.vpc_id
