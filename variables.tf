@@ -42,8 +42,8 @@ variable "aws_tgw_name" {
   default = "ue1tgw"
 }
 
-variable "aws_tgw_cidr_blocks" {
-    description = "value"
-    default = ["192.168.1.0/24"]
-    type = list(string)
+variable "aws_tgw_cidr_block" {
+    description = "Cidr block to be assigned to TGW for GRE connection"
+    default = "192.168.1.0/24"
+    type = string
 }

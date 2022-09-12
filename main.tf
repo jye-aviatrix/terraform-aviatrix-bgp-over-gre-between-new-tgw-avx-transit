@@ -21,7 +21,7 @@ resource "aws_ec2_transit_gateway" "tgw" {
   tags = {
     "Name" = var.aws_tgw_name
   }
-  transit_gateway_cidr_blocks = var.aws_tgw_cidr_blocks
+  transit_gateway_cidr_blocks = [var.aws_tgw_cidr_block]
   vpn_ecmp_support = "enable"
 }
 
@@ -46,5 +46,19 @@ resource "aws_ec2_transit_gateway_connect" "attachment" {
   transit_gateway_id      = aws_ec2_transit_gateway.tgw.id
   tags = {
     "Name" = "${var.avx_transit_gw_name}-Connect"
+  }
+}
+
+# In Aviatrix Transit Gateway VPC, create static route point TGW Cidr block to TGW
+
+resource "aws_route" "route_to_tgw_cidr_block" {
+  for_each = toset(module.mc-transit.vpc.route_tables)
+
+  route_table_id         = each.value
+  destination_cidr_block = var.aws_tgw_cidr_block
+  transit_gateway_id     = aws_ec2_transit_gateway.tgw.id
+
+  timeouts {
+    create = "5m"
   }
 }
