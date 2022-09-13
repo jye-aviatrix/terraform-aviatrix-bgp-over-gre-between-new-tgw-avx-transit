@@ -65,4 +65,4 @@ CoPilot Cloud Routes -> BGP Info shows inner IP configuration
 
 ## Example AWS TGW Connect Peer Status
 Notice each peer, second BGP peering is not been used
-![](20220913100248.png)  
+![](20220913100248.png)
