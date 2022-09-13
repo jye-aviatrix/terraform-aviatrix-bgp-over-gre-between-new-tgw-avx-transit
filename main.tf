@@ -53,9 +53,9 @@ resource "aws_ec2_transit_gateway_connect" "attachment" {
 # In Aviatrix Transit Gateway VPC, create static route point TGW Cidr block to TGW
 
 resource "aws_route" "route_to_tgw_cidr_block" {
-  for_each = toset(module.mc-transit.vpc.route_tables) # Constrain: Not able to retrieve route table ID specific for Aviatrix Transit GW LAN interface
+  count = 2 # Constrain: Not able to retrieve route table ID specific for Aviatrix Transit GW LAN interface, this is a hack. Your actual number of route table may vary
 
-  route_table_id         = each.value
+  route_table_id         = module.mc-transit.vpc.route_tables[count.index]
   destination_cidr_block = var.aws_tgw_cidr_block
   transit_gateway_id     = aws_ec2_transit_gateway.tgw.id
 
@@ -78,17 +78,17 @@ resource "aws_ec2_transit_gateway_connect_peer" "tgw_gre_peer" {
 
 # From Aviatrix Transit, create GRE peering connection to AWS TGW
 resource "aviatrix_transit_external_device_conn" "to_tgw" {
-  count                     = 2
-  vpc_id                    = module.mc-transit.transit_gateway.vpc_id
-  connection_name           = "${var.aws_tgw_name}-${count.index+1}"
-  gw_name                   = module.mc-transit.transit_gateway.gw_name
-  connection_type           = "bgp"
-  tunnel_protocol           = "GRE"
-  bgp_local_as_num          = module.mc-transit.transit_gateway.local_as_number
-  bgp_remote_as_num         = aws_ec2_transit_gateway.tgw.amazon_side_asn
-  remote_gateway_ip         = "${aws_ec2_transit_gateway_connect_peer.tgw_gre_peer[count.index*2].transit_gateway_address},${aws_ec2_transit_gateway_connect_peer.tgw_gre_peer[count.index*2+1].transit_gateway_address}"
-  direct_connect            = true
-  ha_enabled                = false
-  local_tunnel_cidr         = "${cidrhost(local.aws_tgw_BGP_inside_CIDR_ranges_29[count.index*2],1)}/29,${cidrhost(local.aws_tgw_BGP_inside_CIDR_ranges_29[count.index*2+1],1)}/29"
-  remote_tunnel_cidr        = "${cidrhost(local.aws_tgw_BGP_inside_CIDR_ranges_29[count.index*2],2)}/29,${cidrhost(local.aws_tgw_BGP_inside_CIDR_ranges_29[count.index*2+1],2)}/29"
+  count              = 2
+  vpc_id             = module.mc-transit.transit_gateway.vpc_id
+  connection_name    = "${var.aws_tgw_name}-${count.index + 1}"
+  gw_name            = module.mc-transit.transit_gateway.gw_name
+  connection_type    = "bgp"
+  tunnel_protocol    = "GRE"
+  bgp_local_as_num   = module.mc-transit.transit_gateway.local_as_number
+  bgp_remote_as_num  = aws_ec2_transit_gateway.tgw.amazon_side_asn
+  remote_gateway_ip  = "${aws_ec2_transit_gateway_connect_peer.tgw_gre_peer[count.index * 2].transit_gateway_address},${aws_ec2_transit_gateway_connect_peer.tgw_gre_peer[count.index * 2 + 1].transit_gateway_address}"
+  direct_connect     = true
+  ha_enabled         = false
+  local_tunnel_cidr  = "${cidrhost(local.aws_tgw_BGP_inside_CIDR_ranges_29[count.index * 2], 1)}/29,${cidrhost(local.aws_tgw_BGP_inside_CIDR_ranges_29[count.index * 2 + 1], 1)}/29"
+  remote_tunnel_cidr = "${cidrhost(local.aws_tgw_BGP_inside_CIDR_ranges_29[count.index * 2], 2)}/29,${cidrhost(local.aws_tgw_BGP_inside_CIDR_ranges_29[count.index * 2 + 1], 2)}/29"
 }
