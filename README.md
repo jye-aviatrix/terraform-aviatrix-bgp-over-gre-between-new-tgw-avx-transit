@@ -2,6 +2,12 @@
 
 This module builds Aviatrix Transit Gateways and TGW in the same region, then peer them using BGP over GRE.
 
+Last tested on:
+Terraform v1.2.8
+AWS Provider 4.0
+Aviatrix Provider: 2.23.0
+Aviatrix Controller: 6.8.1149
+
 ## Steps taken
 ![](20220913095913.png)  
 - Step A: Create Aviatrix Transit VPC and Transit Gateways, assign ASN
@@ -66,3 +72,13 @@ CoPilot Cloud Routes -> BGP Info shows inner IP configuration
 ## Example AWS TGW Connect Peer Status
 Notice each peer, second BGP peering is not been used
 ![](20220913100248.png)
+
+
+# Estimated cost
+ Name                                                             Monthly Qty  Unit            Monthly Cost
+
+ aws_ec2_transit_gateway_vpc_attachment.tgw_to_avx_transit_vpc
+ ├─ Transit gateway attachment                                            730  hours                 $36.50
+ └─ Data processed                                              Monthly cost depends on usage: $0.02 per GB
+
+ OVERALL TOTAL                                                                                       $36.50
